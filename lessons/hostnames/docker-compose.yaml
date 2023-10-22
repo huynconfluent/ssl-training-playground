@@ -1,0 +1,73 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    hostname: zookeeper.confluentdemo.io
+    environment:
+      ZOO_TLS_QUORUM_ENABLE: true
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SECURE_CLIENT_PORT: 2182
+      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /mnt/ssl/zookeeper.keystore.jks
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: topsecret
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /mnt/ssl/zookeeper.truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: topsecret
+      ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
+      ZOOKEEPER_SSL_CLIENT_AUTH: need
+    volumes:
+      - ../../generated/ssl:/mnt/ssl
+
+  kafka:
+    image: confluentinc/cp-server:7.4.0
+    container_name: kafka
+    hostname: kafka.confluentdemo.io
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /mnt/ssl/kafka.keystore.jks
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: topsecret
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /mnt/ssl/kafka.truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: topsecret
+      KAFKA_ZOOKEEPER_SET_ACL: 'true'
+      KAFKA_ZOOKEEPER_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka.confluentdemo.io:9092,EXTERNAL://kafka.confluentdemo.io:9093
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_LOCATION: /mnt/ssl/kafka.keystore.jks
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEYSTORE_PASSWORD: topsecret
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_KEY_PASSWORD: topsecret
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_TRUSTSTORE_LOCATION: /mnt/ssl/kafka.truststore.jks
+      KAFKA_LISTENER_NAME_EXTERNAL_SSL_TRUSTSTORE_PASSWORD: topsecret
+      KAFKA_LISTENER_NAME_EXTERNAL_SECURITY_PROTOCOL: SSL
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_EXPORTER_KAFKA_TOPIC_REPLICAS: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_HEAL_BROKER_FAILURE_THRESHOLD_MS: 30000
+
+      # Confluent Metrics Reporter
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka.confluentdemo.io:9093
+      CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SSL
+      CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
+      CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: 'true'
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /mnt/ssl/kafka.keystore.jks
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD: topsecret
+      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD: topsecret
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /mnt/ssl/kafka.truststore.jks
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: topsecret
+      
+    volumes:
+      - ../../generated/ssl:/mnt/ssl
