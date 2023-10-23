@@ -1,12 +1,12 @@
 # Certificate Unknown
 
-# Start
+## Start
 Generate the necessary SSL files for this lesson
 ```
 ./start.sh
 ```
 
-# Run Docker
+## Run Docker
 Start Zookeeper
 ```
 docker-compose up -d zookeeper
