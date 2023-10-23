@@ -194,6 +194,7 @@ Version: 3
 
 However this does line up with the Root Issuer for the Zookeeper certificate.
 
+## Solution
 Okay, so let's fix this. Let's pretend we don't have a copy of the Root Certificate in PEM. But we know that this zookeeper truststore has it.
 So we'll do the following.
 1. Extract Root CA from zookeeper truststore in PEM format
@@ -235,7 +236,7 @@ Alright looks good, let's proceed and import this, since we already have an alia
 ```
 keytool -import -keystore ../../generated/ssl/kafka.truststore.jks -file ../../generated/ssl/root_cert.crt -alias correct_cert
 ```
-And let's make sure it's successfully been imported
+And let's make sure it's successfully been imported, by checking the keystore via keytool cli
 ```
 keytool -list -v -keystore ../../generated/ssl/kafka.truststore.jks
 ```
