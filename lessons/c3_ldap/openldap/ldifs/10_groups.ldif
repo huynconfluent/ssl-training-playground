@@ -1,0 +1,11 @@
+dn: cn=confluentcomponents,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: top
+objectClass: posixGroup
+cn: confluentcomponents
+gidNumber: 5000
+
+dn: cn=developers,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: top
+objectClass: posixGroup
+cn: developers
+gidNumber: 5001

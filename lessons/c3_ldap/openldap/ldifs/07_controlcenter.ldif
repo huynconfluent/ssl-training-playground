@@ -1,0 +1,15 @@
+dn: cn=controlcenter,ou=users,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: controlcenter
+sn: Sheen
+givenName: ControlCenter
+cn: controlcenter
+displayName: ControlCenter Sheen
+uidNumber: 10026
+gidNumber: 5000
+userPassword: controlcenter-secret
+gecos: controlcenter
+loginShell: /bin/bash
+homeDirectory: /home/controlcenter
