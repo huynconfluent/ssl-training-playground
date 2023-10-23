@@ -250,6 +250,7 @@ trustStore provider is:
 ```
 We should also see that the system's default truststore doesn't contain our Self Signed Root CA. Meaning that we either need add or specify a truststore to be used for Ldap client.
 
+## Solution
 Since this configuration type is Control Center with Ldap Authentication, we can only specify truststore via JVM options. So let's add that.
 ```
 -Djavax.net.ssl.trustStore=/mnt/ssl/controlcenter.truststore.jks -Djavax.net.ssl.trustStorePassword=topsecret
