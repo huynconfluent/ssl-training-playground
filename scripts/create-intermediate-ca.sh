@@ -12,8 +12,8 @@ if [ -z "$(which $OPENSSL_BIN)" ]; then
     exit 1
 fi
 
-#OPENSSL_VERSION=$($OPENSSL_BIN version | awk '{print $2}' | tr -d '.')
-echo "$OPENSSL_VERSION"
+OPENSSL_VERSION=$($OPENSSL_BIN version | awk '{print $2}' | tr -d '.')
+#echo "$OPENSSL_VERSION"
 if [[ $OPENSSL_VERSION -gt 309 ]]; then
     echo "OpenSSL version is greater than or equal to 3.1.0, please use 3.0 versions only"
     exit 1
