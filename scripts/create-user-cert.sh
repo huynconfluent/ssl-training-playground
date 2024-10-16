@@ -1,10 +1,21 @@
 #!/bin/bash
 
-# GEN_DIR=component ./create-user-cert.sh <component_name> <base_subject> <conf> <issuer_key> <issuer_cert> <fullchain_ca_cert> <subject_alt_entries>
-# GEN_DIR=component ./create-user-cert.sh kafka "/C=US/ST=CA/O=Confluent Demo/OU=Global Technical Support" ./configs/component.cnf ../generated/intermediateca/private/intermediate_3.key ../generated/intermediateca/certs/intermediate-signed_3.pem "../generated/intermediateca/certs/fullchain.pem" "DNS:localhost,DNS:kafka-1.confluentdemo.io"
+# OPENSSL_BIN=openssl GEN_DIR=component ./create-user-cert.sh <component_name> <base_subject> <conf> <issuer_key> <issuer_cert> <fullchain_ca_cert> <subject_alt_entries>
+# OPENSSL_BIN=openssl GEN_DIR=component ./create-user-cert.sh kafka "/C=US/ST=CA/O=Confluent Demo/OU=Global Technical Support" ./configs/component.cnf ../generated/intermediateca/private/intermediate_3.key ../generated/intermediateca/certs/intermediate-signed_3.pem "../generated/intermediateca/certs/fullchain.pem" "DNS:localhost,DNS:kafka-1.confluentdemo.io"
 
-if [ -z "$(which openssl)" ]; then
+if [ -z "$OPENSSL_BIN" ]; then
+    OPENSSL_BIN=openssl
+fi
+
+if [ -z "$(which $OPENSSL_BIN)" ]; then
     echo "Missing openssl, please install"
+    exit 1
+fi
+
+#OPENSSL_VERSION=$($OPENSSL_BIN version | awk '{print $2}' | tr -d '.')
+echo "$OPENSSL_VERSION"
+if [[ $OPENSSL_VERSION -gt 309 ]]; then
+    echo "OpenSSL version is greater than or equal to 3.1.0, please use 3.0 versions only"
     exit 1
 fi
 
@@ -36,13 +47,13 @@ fi
 # create private key and CSR
 if [ -z "$7" ]; then
     # no subjectAltName
-    openssl req -newkey rsa:2048 -keyout $PRIVATE_COMPONENT_KEY_PATH/$COMPONENT_NAME.key -out $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -noenc -subj "${SUBJECT}" -config $CONF -extensions v3_component > /dev/null 2>&1
+    $OPENSSL_BIN req -newkey rsa:2048 -keyout $PRIVATE_COMPONENT_KEY_PATH/$COMPONENT_NAME.key -out $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -noenc -subj "${SUBJECT}" -config $CONF -extensions v3_component > /dev/null 2>&1
 else
-    openssl req -newkey rsa:2048 -keyout $PRIVATE_COMPONENT_KEY_PATH/$COMPONENT_NAME.key -out $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -noenc -subj "${SUBJECT}" -addext "subjectAltName = ${SUBJECT_ALT_DNS}" -config $CONF -extensions v3_component > /dev/null 2>&1
+    $OPENSSL_BIN req -newkey rsa:2048 -keyout $PRIVATE_COMPONENT_KEY_PATH/$COMPONENT_NAME.key -out $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -noenc -subj "${SUBJECT}" -addext "subjectAltName = ${SUBJECT_ALT_DNS}" -config $CONF -extensions v3_component > /dev/null 2>&1
 fi
 
 #echo "Signing $COMPONENT_NAME CSR"
-openssl ca -config $CONF -extensions v3_component -days $DAYS_EXPIRE -notext -md sha256 -in $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -out $PUBLIC_COMPONENT_CERT_PATH/$COMPONENT_NAME-signed.pem -keyfile $ISSUER_KEY -cert $ISSUER_CERT -batch > /dev/null 2>&1
+$OPENSSL_BIN ca -config $CONF -extensions v3_component -days $DAYS_EXPIRE -notext -md sha256 -in $COMPONENT_CSR_PATH/$COMPONENT_NAME.csr -out $PUBLIC_COMPONENT_CERT_PATH/$COMPONENT_NAME-signed.pem -keyfile $ISSUER_KEY -cert $ISSUER_CERT -batch > /dev/null 2>&1
 #echo "Cert signed for $COMPONENT_NAME"
 
 # create fullchain

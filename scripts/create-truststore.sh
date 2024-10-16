@@ -2,11 +2,6 @@
 
 # ./create-truststore.sh <component_name> <fullchain_cert> <keystore_password>
 
-if [ -z "$(which openssl)" ]; then
-    echo "Missing openssl, please install"
-    exit 1
-fi
-
 if [ -z "$(which keytool)" ]; then
     echo "Missing keytool, please install"
     exit 1
