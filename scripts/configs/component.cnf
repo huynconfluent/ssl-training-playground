@@ -72,7 +72,7 @@ localityName_default                =
 # client cert
 [ v3_component ]
 basicConstraints            = critical, CA:false
-subjectKeyIdentifier        = hash
-authorityKeyIdentifier      = keyid:always,issuer
+#subjectKeyIdentifier        = hash
+#authorityKeyIdentifier      = keyid:always,issuer
 keyUsage                    = critical, nonRepudiation, digitalSignature
 extendedKeyUsage            = critical, serverAuth, clientAuth
